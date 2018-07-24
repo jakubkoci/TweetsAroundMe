@@ -1,0 +1,6 @@
+{
+  "javascript.format.enable": false,
+  "flow.useNPMPackagedFlow": true,
+  "javascript.validate.enable": false,
+  "flow.enabled": false
+}
