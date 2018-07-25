@@ -15,4 +15,7 @@ module.exports = {
     'react/prop-types': 'off', // because of Flow types instead of prop-types
     'react/jsx-filename-extension': 'off',
   },
+  globals: {
+    fetch: false,
+  },
 }

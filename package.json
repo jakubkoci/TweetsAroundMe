@@ -10,8 +10,11 @@
     "flow": "flow"
   },
   "dependencies": {
+    "buffer": "^5.1.0",
+    "js-base64": "^2.4.8",
     "react": "16.4.1",
-    "react-native": "0.56.0"
+    "react-native": "0.56.0",
+    "react-native-dotenv": "^0.2.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.6",
