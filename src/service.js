@@ -4,7 +4,7 @@ import { API_URL, CONSUMER_API_KEY, CONSUMER_API_SECRET_KEY } from 'react-native
 
 export async function fetchTrends() {
   const apiToken = await fetchApiToken()
-  const position = getCurrentPosition()
+  const position = await getCurrentPosition()
   const locations = await fetchLocationsByPosition(apiToken, position)
   const [nearestLocation] = locations
   const trends = await fetchTrendsByLocation(apiToken, nearestLocation)
@@ -36,11 +36,19 @@ async function fetchApiToken() {
 }
 
 function getCurrentPosition() {
-  const coordinates = {
-    latitude: '37.781157',
-    longitude: '-122.400612831116',
-  }
-  return { coordinates }
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const { coords } = position
+        const coordinates = {
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+        }
+        resolve({ coordinates })
+      },
+      error => reject(error)
+    )
+  })
 }
 
 async function fetchLocationsByPosition(apiToken, position) {

@@ -17,5 +17,6 @@ module.exports = {
   },
   globals: {
     fetch: false,
+    navigator: false,
   },
 }
