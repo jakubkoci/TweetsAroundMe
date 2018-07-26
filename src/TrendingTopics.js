@@ -1,6 +1,7 @@
 // @flow
 import React from 'react'
 import { StyleSheet, Text, View, FlatList, Linking } from 'react-native'
+import StatusBar from './StatusBar'
 import { fetchTrends } from './service'
 import type { TrendingTopic } from './types'
 
@@ -8,13 +9,23 @@ type Props = {}
 
 type State = {|
   loading: boolean,
-  trends: Array<TrendingTopic>,
+  error: ?string,
+  data: {|
+    position: any,
+    trends: Array<TrendingTopic>,
+  |},
 |}
 
 export default class TrendingTopics extends React.Component<Props, State> {
   state = {
     loading: false,
-    trends: [],
+    error: null,
+    data: {
+      position: {
+        coordinates: {},
+      },
+      trends: [],
+    },
   }
 
   componentDidMount() {
@@ -24,11 +35,10 @@ export default class TrendingTopics extends React.Component<Props, State> {
   fetchData = async () => {
     this.setState({ loading: true })
     try {
-      const trends = await fetchTrends()
-      this.setState({ loading: false, trends })
+      const data = await fetchTrends()
+      this.setState({ loading: false, data })
     } catch (error) {
-      this.setState({ loading: false })
-      console.error(error)
+      this.setState({ loading: false, error: 'Something went wrong! Try to reload, please.' })
     }
   }
 
@@ -45,17 +55,12 @@ export default class TrendingTopics extends React.Component<Props, State> {
   }
 
   render() {
-    const { trends, loading } = this.state
-    if (loading) {
-      return (
-        <View>
-          <Text>Loading...</Text>
-        </View>
-      )
-    }
+    const { loading, error, data } = this.state
+    const { trends, position } = data
 
     return (
       <View style={styles.container}>
+        <StatusBar loading={loading} error={error} position={position} onReloadClick={() => this.fetchData()} />
         <FlatList data={trends} keyExtractor={({ name }) => name} renderItem={this.renderItem} />
       </View>
     )

@@ -26,9 +26,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   headerText: {
-    fontSize: 20,
+    fontWeight: 'bold',
+    fontSize: 18,
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 25,
     marginBottom: 15,
   },
 })

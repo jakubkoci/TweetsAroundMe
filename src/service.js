@@ -5,10 +5,13 @@ import { API_URL, CONSUMER_API_KEY, CONSUMER_API_SECRET_KEY } from 'react-native
 export async function fetchTrends() {
   const apiToken = await fetchApiToken()
   const position = await getCurrentPosition()
-  const locations = await fetchLocationsByPosition(apiToken, position)
+  const locations = await fetchTrendingLocationsByPosition(apiToken, position)
   const [nearestLocation] = locations
-  const trends = await fetchTrendsByLocation(apiToken, nearestLocation)
-  return trends
+  const trends = await fetchTrendingTopicsByLocation(apiToken, nearestLocation)
+  return {
+    trends,
+    position,
+  }
 }
 
 async function fetchApiToken() {
@@ -27,8 +30,7 @@ async function fetchApiToken() {
   const response = await fetch(endpoint, options)
 
   if (response.status !== 200) {
-    logErrorResponse(response)
-    throw new Error('Request for API token failed')
+    logResponseAndThrowError(response, 'Request for API token failed')
   }
 
   const apiBearerToken = await response.json()
@@ -51,7 +53,7 @@ function getCurrentPosition() {
   })
 }
 
-async function fetchLocationsByPosition(apiToken, position) {
+async function fetchTrendingLocationsByPosition(apiToken, position) {
   const { coordinates } = position
   const { latitude, longitude } = coordinates
 
@@ -65,15 +67,14 @@ async function fetchLocationsByPosition(apiToken, position) {
   const response = await fetch(endpoint, options)
 
   if (response.status !== 200) {
-    logErrorResponse(response)
-    throw new Error('Request for Trends data failed')
+    logResponseAndThrowError(response, 'Request for trending locations by position failed')
   }
 
   const trends = await response.json()
   return trends
 }
 
-async function fetchTrendsByLocation(apiToken, location) {
+async function fetchTrendingTopicsByLocation(apiToken, location) {
   const { woeid } = location
   const endpoint = `${API_URL}/1.1/trends/place.json?id=${woeid}`
   const options = {
@@ -85,17 +86,16 @@ async function fetchTrendsByLocation(apiToken, location) {
   const response = await fetch(endpoint, options)
 
   if (response.status !== 200) {
-    logErrorResponse(response)
-    throw new Error('Request for Trends data failed')
+    logResponseAndThrowError(response, 'Request for trending topics by location failed')
   }
 
   const trends = await response.json()
-  return trends[0].trends
+  return trends.length > 0 ? trends[0].trends : []
 }
 
-async function logErrorResponse(response, message) {
+async function logResponseAndThrowError(response, message) {
   const { status } = response
   const { errors } = await response.json()
-  console.error(message, { status, errors })
+  console.log(message, { status, errors })
   throw new Error(message)
 }
