@@ -10,6 +10,8 @@ module.exports = {
         order: ['static-methods', 'lifecycle', 'everything-else', 'render'],
       },
     ],
+    // allow body in order to easily add/remove variable, logging or break point for debugging purposes
+    'arrow-body-style': 'off', // http://eslint.org/docs/rules/arrow-body-style
     'import/extensions': ['error', { json: 'always', css: 'always' }],
     'import/prefer-default-export': 'off',
     'react/prop-types': 'off', // because of Flow types instead of prop-types

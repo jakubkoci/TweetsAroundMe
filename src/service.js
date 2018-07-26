@@ -90,7 +90,7 @@ async function fetchTrendsByLocation(apiToken, location) {
   }
 
   const trends = await response.json()
-  return trends
+  return trends[0].trends
 }
 
 async function logErrorResponse(response, message) {
