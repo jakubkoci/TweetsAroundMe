@@ -5,7 +5,7 @@ import TrendingTopics from './TrendingTopics'
 
 export default function App() {
   return (
-    <View>
+    <View style={styles.container}>
       <Header>Trends Around Me</Header>
       <TrendingTopics />
     </View>
@@ -22,6 +22,7 @@ function Header({ children }) {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: '#F5FCFF',
   },
   headerText: {

@@ -55,7 +55,7 @@ export default class TrendingTopics extends React.Component<Props, State> {
     }
 
     return (
-      <View>
+      <View style={styles.container}>
         <FlatList data={trends} keyExtractor={({ name }) => name} renderItem={this.renderItem} />
       </View>
     )
@@ -63,6 +63,9 @@ export default class TrendingTopics extends React.Component<Props, State> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   item: {
     margin: 10,
   },
