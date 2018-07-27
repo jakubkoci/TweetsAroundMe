@@ -1,26 +1,26 @@
 // @flow
 import { API_URL } from 'react-native-dotenv'
-import { fetchApiToken } from './auth'
+import { fetchCachedApiToken as fetchApiToken } from './auth'
 import { getCurrentPosition } from './geolocation'
 import { logResponseAndThrowError } from './utils'
 
 export async function fetchTrends() {
-  const apiToken = await fetchApiToken()
   const position = await getCurrentPosition()
-  const locations = await fetchTrendingLocationsByPosition(apiToken, position)
+  const locations = await fetchTrendingLocationsByPosition(position)
   const [nearestLocation] = locations
-  const trends = await fetchTrendingTopicsByLocation(apiToken, nearestLocation)
+  const trends = await fetchTrendingTopicsByLocation(nearestLocation)
   return {
     trends,
     position,
   }
 }
 
-async function fetchTrendingLocationsByPosition(apiToken, position) {
+async function fetchTrendingLocationsByPosition(position) {
   const { coordinates } = position
   const { latitude, longitude } = coordinates
 
   const endpoint = `${API_URL}/1.1/trends/closest.json?lat=${latitude}&long=${longitude}`
+  const apiToken = await fetchApiToken()
   const options = {
     headers: {
       Authorization: `Bearer ${apiToken}`,
@@ -37,9 +37,11 @@ async function fetchTrendingLocationsByPosition(apiToken, position) {
   return trends
 }
 
-async function fetchTrendingTopicsByLocation(apiToken, location) {
+async function fetchTrendingTopicsByLocation(location) {
   const { woeid } = location
+
   const endpoint = `${API_URL}/1.1/trends/place.json?id=${woeid}`
+  const apiToken = await fetchApiToken()
   const options = {
     headers: {
       Authorization: `Bearer ${apiToken}`,

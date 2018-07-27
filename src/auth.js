@@ -3,7 +3,19 @@ import { Base64 } from 'js-base64'
 import { API_URL, CONSUMER_API_KEY, CONSUMER_API_SECRET_KEY } from 'react-native-dotenv'
 import { logResponseAndThrowError } from './utils'
 
-export async function fetchApiToken() {
+function memoizeFetchApiToken() {
+  let cachedToken
+  return async () => {
+    if (!cachedToken) {
+      cachedToken = await fetchApiToken()
+    }
+
+    return cachedToken
+  }
+}
+
+async function fetchApiToken() {
+  console.log('calling fetchApiToken')
   const credentialsBearerToken = Base64.encode(`${CONSUMER_API_KEY}:${CONSUMER_API_SECRET_KEY}`)
 
   const endpoint = `${API_URL}/oauth2/token`
@@ -25,3 +37,5 @@ export async function fetchApiToken() {
   const apiBearerToken = await response.json()
   return apiBearerToken.access_token
 }
+
+export const fetchCachedApiToken = memoizeFetchApiToken()
