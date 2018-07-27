@@ -2,8 +2,8 @@
 import React from 'react'
 import { StyleSheet, Text, View, FlatList, Linking } from 'react-native'
 import StatusBar from './StatusBar'
-import { fetchTrends } from './service'
-import type { TrendingTopic } from './types'
+import { fetchTrends } from '../trends'
+import type { TrendingTopic } from '../types'
 
 type Props = {}
 

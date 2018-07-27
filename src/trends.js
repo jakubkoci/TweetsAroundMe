@@ -1,6 +1,8 @@
 // @flow
-import { Base64 } from 'js-base64'
-import { API_URL, CONSUMER_API_KEY, CONSUMER_API_SECRET_KEY } from 'react-native-dotenv'
+import { API_URL } from 'react-native-dotenv'
+import { fetchApiToken } from './auth'
+import { getCurrentPosition } from './geolocation'
+import { logResponseAndThrowError } from './utils'
 
 export async function fetchTrends() {
   const apiToken = await fetchApiToken()
@@ -12,45 +14,6 @@ export async function fetchTrends() {
     trends,
     position,
   }
-}
-
-async function fetchApiToken() {
-  const credentialsBearerToken = Base64.encode(`${CONSUMER_API_KEY}:${CONSUMER_API_SECRET_KEY}`)
-
-  const endpoint = `${API_URL}/oauth2/token`
-  const options = {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${credentialsBearerToken}`,
-      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-    },
-    body: 'grant_type=client_credentials',
-  }
-
-  const response = await fetch(endpoint, options)
-
-  if (response.status !== 200) {
-    logResponseAndThrowError(response, 'Request for API token failed')
-  }
-
-  const apiBearerToken = await response.json()
-  return apiBearerToken.access_token
-}
-
-function getCurrentPosition() {
-  return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        const { coords } = position
-        const coordinates = {
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-        }
-        resolve({ coordinates })
-      },
-      error => reject(error)
-    )
-  })
 }
 
 async function fetchTrendingLocationsByPosition(apiToken, position) {
@@ -91,11 +54,4 @@ async function fetchTrendingTopicsByLocation(apiToken, location) {
 
   const trends = await response.json()
   return trends.length > 0 ? trends[0].trends : []
-}
-
-async function logResponseAndThrowError(response, message) {
-  const { status } = response
-  const { errors } = await response.json()
-  console.log(message, { status, errors })
-  throw new Error(message)
 }
