@@ -15,7 +15,6 @@ function memoizeFetchApiToken() {
 }
 
 async function fetchApiToken() {
-  console.log('calling fetchApiToken')
   const credentialsBearerToken = Base64.encode(`${CONSUMER_API_KEY}:${CONSUMER_API_SECRET_KEY}`)
 
   const endpoint = `${API_URL}/oauth2/token`

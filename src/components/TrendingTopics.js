@@ -16,24 +16,26 @@ type State = {|
   |},
 |}
 
-export default class TrendingTopics extends React.Component<Props, State> {
-  state = {
-    loading: false,
-    error: null,
-    data: {
-      position: {
-        coordinates: {},
-      },
-      trends: [],
+const initialState = {
+  loading: false,
+  error: null,
+  data: {
+    position: {
+      coordinates: {},
     },
-  }
+    trends: [],
+  },
+}
+
+export default class TrendingTopics extends React.Component<Props, State> {
+  state = initialState
 
   componentDidMount() {
     this.fetchData()
   }
 
   fetchData = async () => {
-    this.setState({ loading: true })
+    this.setState({ loading: true, data: { ...initialState.data } })
     try {
       const data = await fetchTrends()
       this.setState({ loading: false, data })
