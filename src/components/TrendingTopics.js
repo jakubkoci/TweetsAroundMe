@@ -1,7 +1,8 @@
 // @flow
 import React from 'react'
-import { StyleSheet, Text, View, FlatList, Linking } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import StatusBar from './StatusBar'
+import TrendingTopicList from './TrendingTopicList'
 import { fetchTrends } from '../trends'
 import type { TrendingTopic } from '../types'
 
@@ -44,18 +45,6 @@ export default class TrendingTopics extends React.Component<Props, State> {
     }
   }
 
-  renderItem = (info: { item: TrendingTopic }) => {
-    const { item } = info
-    return (
-      <View style={styles.item}>
-        <Text style={styles.itemName} onPress={() => Linking.openURL(item.url)}>
-          {item.name}
-        </Text>
-        {item.tweet_volume && <Text style={styles.itemTweetsVolume}>{item.tweet_volume} tweets</Text>}
-      </View>
-    )
-  }
-
   render() {
     const { loading, error, data } = this.state
     const { trends, position } = data
@@ -63,7 +52,7 @@ export default class TrendingTopics extends React.Component<Props, State> {
     return (
       <View style={styles.container}>
         <StatusBar loading={loading} error={error} position={position} onReloadClick={() => this.fetchData()} />
-        <FlatList data={trends} keyExtractor={({ name }) => name} renderItem={this.renderItem} />
+        <TrendingTopicList trendingTopics={trends} />
       </View>
     )
   }
@@ -72,17 +61,5 @@ export default class TrendingTopics extends React.Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  item: {
-    margin: 10,
-  },
-  itemName: {
-    color: '#1DA1F2',
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
-  },
-  itemTweetsVolume: {
-    marginTop: 5,
-    color: '#657786',
   },
 })
