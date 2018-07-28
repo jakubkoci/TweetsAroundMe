@@ -4,17 +4,14 @@ import { StyleSheet, View } from 'react-native'
 import StatusBar from './StatusBar'
 import TrendingTopicList from './TrendingTopicList'
 import { fetchTrends } from '../trends'
-import type { TrendingTopic } from '../types'
+import type { TrendsData } from '../types'
 
 type Props = {}
 
 type State = {|
   loading: boolean,
   error: ?string,
-  data: {|
-    position: any,
-    trends: Array<TrendingTopic>,
-  |},
+  data: TrendsData,
 |}
 
 const initialState = {
@@ -22,7 +19,10 @@ const initialState = {
   error: null,
   data: {
     position: {
-      coordinates: {},
+      coordinates: {
+        latitude: 0,
+        longitude: 0,
+      },
     },
     trends: [],
   },
@@ -31,11 +31,11 @@ const initialState = {
 export default class TrendingTopics extends React.Component<Props, State> {
   state = initialState
 
-  componentDidMount() {
+  componentDidMount(): void {
     this.fetchData()
   }
 
-  fetchData = async () => {
+  fetchData = async (): Promise<void> => {
     this.setState({ loading: true, data: { ...initialState.data } })
     try {
       const data = await fetchTrends()

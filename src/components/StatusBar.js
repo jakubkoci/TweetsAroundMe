@@ -1,12 +1,13 @@
 // @flow
 import React from 'react'
 import { StyleSheet, Text, View, Button } from 'react-native'
+import type { Position } from '../types'
 
 type Props = {
   loading: boolean,
   error: ?string,
-  position: any,
-  onReloadClick: () => any,
+  position: Position,
+  onReloadClick: () => Promise<void>,
 }
 
 export default function StatusBar({ loading, error, position, onReloadClick }: Props) {

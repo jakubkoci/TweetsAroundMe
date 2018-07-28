@@ -1,15 +1,15 @@
 // @flow
 
-type Body = {
+type ErrorsBody = {
   errors: any,
 }
 
 type Response = {
   status: number,
-  json: () => Promise<Body>,
+  json: () => Promise<ErrorsBody>,
 }
 
-export async function logResponseAndThrowError(response: Response, message: string) {
+export async function logResponseAndThrowError(response: Response, message: string): void {
   const { status } = response
   const { errors } = await response.json()
   console.log(message, { status, errors })

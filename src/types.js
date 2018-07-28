@@ -4,3 +4,15 @@ export type TrendingTopic = {
   url: string,
   tweet_volume: ?number,
 }
+
+export type Position = {
+  coordinates: {
+    latitude: number,
+    longitude: number,
+  },
+}
+
+export type TrendsData = {
+  trends: Array<TrendingTopic>,
+  position: Position,
+}

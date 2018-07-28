@@ -1,5 +1,7 @@
 // @flow
-export function getCurrentPosition() {
+import type { Position } from './types'
+
+export function getCurrentPosition(): Promise<Position> {
   return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(
       position => {

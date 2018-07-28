@@ -3,8 +3,13 @@ import { API_URL } from 'react-native-dotenv'
 import { fetchCachedApiToken as fetchApiToken } from './auth'
 import { getCurrentPosition } from './geolocation'
 import { logResponseAndThrowError } from './utils'
+import type { TrendingTopic, Position, TrendsData } from './types'
 
-export async function fetchTrends() {
+type Location = {
+  woeid: number | string,
+}
+
+export async function fetchTrends(): Promise<TrendsData> {
   const position = await getCurrentPosition()
   const locations = await fetchTrendingLocationsByPosition(position)
   const [nearestLocation] = locations
@@ -15,7 +20,7 @@ export async function fetchTrends() {
   }
 }
 
-async function fetchTrendingLocationsByPosition(position) {
+async function fetchTrendingLocationsByPosition(position: Position): Promise<Array<Location>> {
   const { coordinates } = position
   const { latitude, longitude } = coordinates
 
@@ -33,11 +38,11 @@ async function fetchTrendingLocationsByPosition(position) {
     logResponseAndThrowError(response, 'Request for trending locations by position failed')
   }
 
-  const trends = await response.json()
-  return trends
+  const locations = await response.json()
+  return locations
 }
 
-async function fetchTrendingTopicsByLocation(location) {
+async function fetchTrendingTopicsByLocation(location: Location): Promise<Array<TrendingTopic>> {
   const { woeid } = location
 
   const endpoint = `${API_URL}/1.1/trends/place.json?id=${woeid}`
