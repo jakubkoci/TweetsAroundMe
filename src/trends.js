@@ -1,6 +1,6 @@
 // @flow
 import { API_URL } from 'react-native-dotenv'
-import { fetchCachedApiToken as fetchApiToken } from './auth'
+import { authorizedFetch } from './auth'
 import { getCurrentPosition } from './geolocation'
 import { logResponseAndThrowError } from './utils'
 import type { TrendingTopic, Position, TrendsData } from './types'
@@ -25,14 +25,7 @@ async function fetchTrendingLocationsByPosition(position: Position): Promise<Arr
   const { latitude, longitude } = coordinates
 
   const endpoint = `${API_URL}/1.1/trends/closest.json?lat=${latitude}&long=${longitude}`
-  const apiToken = await fetchApiToken()
-  const options = {
-    headers: {
-      Authorization: `Bearer ${apiToken}`,
-    },
-  }
-
-  const response = await fetch(endpoint, options)
+  const response = await authorizedFetch(endpoint)
 
   if (response.status !== 200) {
     logResponseAndThrowError(response, 'Request for trending locations by position failed')
@@ -46,14 +39,7 @@ async function fetchTrendingTopicsByLocation(location: Location): Promise<Array<
   const { woeid } = location
 
   const endpoint = `${API_URL}/1.1/trends/place.json?id=${woeid}`
-  const apiToken = await fetchApiToken()
-  const options = {
-    headers: {
-      Authorization: `Bearer ${apiToken}`,
-    },
-  }
-
-  const response = await fetch(endpoint, options)
+  const response = await authorizedFetch(endpoint)
 
   if (response.status !== 200) {
     logResponseAndThrowError(response, 'Request for trending topics by location failed')

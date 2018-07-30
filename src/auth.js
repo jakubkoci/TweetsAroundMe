@@ -3,14 +3,53 @@ import { Base64 } from 'js-base64'
 import { API_URL, CONSUMER_API_KEY, CONSUMER_API_SECRET_KEY } from 'react-native-dotenv'
 import { logResponseAndThrowError } from './utils'
 
-export const fetchCachedApiToken: () => Promise<string> = memoizeFetchApiToken()
+// Error code according to documentation (https://developer.twitter.com/en/docs/basics/response-codes).
+const INVALID_OR_EXPIRED_TOKEN_CODE = 89
 
+export async function authorizedFetch(endpoint: string) {
+  const apiToken = await fetchApiToken()
+  const options = {
+    headers: {
+      Authorization: `Bearer ${apiToken}`,
+    },
+  }
+
+  const response = await fetch(endpoint, options)
+
+  if (response.status === 401) {
+    const { errors } = await response.json()
+    const isTokenExpired = errors.some(error => INVALID_OR_EXPIRED_TOKEN_CODE === error.code)
+
+    if (isTokenExpired) {
+      await refreshApiToken()
+    }
+  }
+  return fetch(endpoint, options)
+}
+
+/**
+ * Returns cached API token or call auth API endpoint to get it.
+ */
+const fetchCachedApiToken: (refresh: ?boolean) => Promise<string> = memoizeFetchApiToken()
+
+/**
+ * Renew cached API token by calling auth API endpoint.
+ */
+function refreshApiToken() {
+  fetchCachedApiToken(true)
+}
+
+/**
+ * Returns function which will cache API key at least in-memory to avoid unnecessary calls to auth endpoint.
+ */
 function memoizeFetchApiToken(): () => Promise<string> {
   let cachedToken
-  return async () => {
-    if (!cachedToken) {
+  return async (refresh = false) => {
+    if (!cachedToken || refresh) {
       cachedToken = await fetchApiToken()
     }
+
+    console.log('token', cachedToken)
 
     return cachedToken
   }
